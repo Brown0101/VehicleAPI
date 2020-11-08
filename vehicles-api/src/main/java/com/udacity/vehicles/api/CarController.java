@@ -79,9 +79,9 @@ class CarController {
          * Use the `assembler` on that saved car and return as part of the response.
          * Update the first line as part of the above implementing.
          */
-        this.carService.save(car);
+        Car creatUpdateCar = this.carService.save(car);
 
-        Resource<Car> resource = assembler.toResource(new Car());
+        Resource<Car> resource = assembler.toResource(creatUpdateCar);
         return ResponseEntity.created(new URI(resource.getId().expand().getHref())).body(resource);
     }
 
