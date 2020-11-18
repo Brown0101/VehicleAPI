@@ -129,30 +129,14 @@ public class CarControllerTest {
     @Test
     public void updateCar() throws Exception {
         Car car = putCar();
-        System.out.println("=========================================================");
-        System.out.println("=========================================================");
-        System.out.println("=========================================================");
-        System.out.println("=========================================================");
-        System.out.println("=========================================================");
-        System.out.println("=========================================================");
-        System.out.println(json.write(car).getJson());
-        System.out.println("=========================================================");
-        System.out.println("=========================================================");
-        System.out.println("=========================================================");
-        System.out.println("=========================================================");
-        System.out.println("=========================================================");
-        System.out.println("=========================================================");
 
         mvc.perform(put(new URI("/cars/1"))
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(json.write(car).getJson()))
-                .andExpect(status().isOk());
-
-        // I can use below if I want to view updated data
-//                .andExpect(jsonPath("$.details.body").value("Convertable"))
-//                .andExpect(jsonPath("$.details.model").value("Mazda MX-5 Miata RF"));
-//                .andExpect(jsonPath("$.condition").value("NEW"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.details.body").value("Convertable"))
+                .andExpect(jsonPath("$.details.model").value("Mazda MX-5 Miata RF"));
 
     }
 

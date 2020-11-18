@@ -110,7 +110,7 @@ class CarController {
         car.setId(id);
         this.carService.save(car);
 
-        Resource<Car> resource = assembler.toResource(this.carService.findById(car.getId()));
+        Resource<Car> resource = assembler.toResource(car);
         return ResponseEntity.ok(resource);
     }
 
