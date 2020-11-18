@@ -9,6 +9,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -99,11 +100,6 @@ public class CarControllerTest {
          *   the whole list of vehicles. This should utilize the car from `getCar()`
          *   below (the vehicle will be the first in the list).
          */
-//        mvc.perform(get("/cars"))
-//                .andExpect(status().isOk())
-//                .andExpect(content().contentType("application/hal+json;charset=UTF-8"));
-//
-//        verify(carService, times(1)).list();
         mvc.perform(get(new URI("/cars"))
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -124,6 +120,40 @@ public class CarControllerTest {
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
+    }
+
+    /**
+     * Tests to update of a single car by ID.
+     * @throws Exception if the update operation of a vehicle fails
+     */
+    @Test
+    public void updateCar() throws Exception {
+        Car car = putCar();
+        System.out.println("=========================================================");
+        System.out.println("=========================================================");
+        System.out.println("=========================================================");
+        System.out.println("=========================================================");
+        System.out.println("=========================================================");
+        System.out.println("=========================================================");
+        System.out.println(json.write(car).getJson());
+        System.out.println("=========================================================");
+        System.out.println("=========================================================");
+        System.out.println("=========================================================");
+        System.out.println("=========================================================");
+        System.out.println("=========================================================");
+        System.out.println("=========================================================");
+
+        mvc.perform(put(new URI("/cars/1"))
+                .accept(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(json.write(car).getJson()))
+                .andExpect(status().isOk());
+
+        // I can use below if I want to view updated data
+//                .andExpect(jsonPath("$.details.body").value("Convertable"))
+//                .andExpect(jsonPath("$.details.model").value("Mazda MX-5 Miata RF"));
+//                .andExpect(jsonPath("$.condition").value("NEW"));
+
     }
 
     /**
@@ -164,6 +194,21 @@ public class CarControllerTest {
         details.setNumberOfDoors(4);
         car.setDetails(details);
         car.setCondition(Condition.USED);
+        return car;
+    }
+
+    private Car putCar() {
+        // Get the current car
+        Car car = getCar();
+
+        // Get car details and modify body and model.
+        Details details = car.getDetails();
+        details.setBody("Convertable");
+        details.setModel("Mazda MX-5 Miata RF");
+
+        // Set updated details
+        car.setDetails(details);
+
         return car;
     }
 }

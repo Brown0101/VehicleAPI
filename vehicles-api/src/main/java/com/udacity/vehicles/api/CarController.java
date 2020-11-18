@@ -12,8 +12,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +32,11 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/cars")
+@ApiResponses(value = {
+        @ApiResponse(code = 400, message = "This is a bad request, please follow the API documentation for the proper request."),
+        @ApiResponse(code = 401, message = "Due to security constraints, your access request cannot be authorized."),
+        @ApiResponse(code = 500, message = "The server is down. Please make sure that the Vehicle service is running.")
+})
 class CarController {
 
     private final CarService carService;
@@ -43,7 +51,7 @@ class CarController {
      * Creates a list to store any vehicles.
      * @return list of vehicles
      */
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     Resources<Resource<Car>> list() {
         List<Resource<Car>> resources = carService.list().stream().map(assembler::toResource)
                 .collect(Collectors.toList());
@@ -56,7 +64,7 @@ class CarController {
      * @param id the id number of the given vehicle
      * @return all information for the requested vehicle
      */
-    @GetMapping("/{id}")
+    @GetMapping(value="/{id}", produces=MediaType.APPLICATION_JSON_VALUE)
     Resource<Car> get(@PathVariable Long id) {
         /**
          * Use the `findById` method from the Car Service to get car information.
@@ -79,9 +87,8 @@ class CarController {
          * Use the `assembler` on that saved car and return as part of the response.
          * Update the first line as part of the above implementing.
          */
-        Car creatUpdateCar = this.carService.save(car);
 
-        Resource<Car> resource = assembler.toResource(creatUpdateCar);
+        Resource<Car> resource = assembler.toResource(this.carService.save(car));
         return ResponseEntity.created(new URI(resource.getId().expand().getHref())).body(resource);
     }
 

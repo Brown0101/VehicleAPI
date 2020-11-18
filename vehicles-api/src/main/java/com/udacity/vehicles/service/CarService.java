@@ -10,6 +10,8 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
+
 /**
  * Implements the car service create, read, update or delete
  * information about vehicles, as well as gather related
@@ -33,7 +35,7 @@ public class CarService {
      * @return a list of all vehicles in the CarRepository
      */
     public List<Car> list() {
-        return repository.findAll();
+        return this.repository.findAll();
     }
 
     /**
@@ -42,24 +44,21 @@ public class CarService {
      * @return the requested car's information, including location and price
      */
     public Car findById(Long id) {
-        Optional<Car> optionalCar = Optional.ofNullable(this.repository.findCarById(id));
-        Car car = optionalCar.orElseThrow(CarNotFoundException::new);
+        Car car = this.repository.findById(id).orElseThrow(CarNotFoundException::new);
 
         /**
          * Note: The car class file uses @transient, meaning you will need to call
          *   the pricing service each time to get the price.
          */
-        String carPrice = this.priceClient.getPrice(car.getId());
+        car.setPrice(this.priceClient.getPrice(id));
 
 
         /**
          * Note: The Location class file also uses @transient for the address,
          * meaning the Maps service needs to be called each time for the address.
          */
-        Double lattitude = 36.740520D;
-        Double longitude = -95.931618D;
-        Location location = new Location(lattitude, longitude);
-        car.setLocation(this.mapsClient.getAddress(location));
+        Location location = car.getLocation();
+        car.setLocation(mapsClient.getAddress(location));
 
 
         return car;
@@ -91,8 +90,7 @@ public class CarService {
         /**
          *  If it does not exist, throw a CarNotFoundException
          */
-        Optional<Car> optionalCar = Optional.ofNullable(this.repository.findCarById(id));
-        Car car = optionalCar.orElseThrow(CarNotFoundException::new);
+        Car car = this.repository.findById(id).orElseThrow(CarNotFoundException::new);
 
 
         /**B
